@@ -1,0 +1,110 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-7877352636452964437
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0a82fec78ebc734d9ad1346cd40b5f9, type: 3}
+  m_Name: ThunderstoreData
+  m_EditorClassIdentifier: 
+  StagingPaths:
+  - <ManifestStagingRoot>
+  url: 
+--- !u!114 &-4077804829092145557
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b243ff405b33b94dbf5b6775dd9aa33, type: 3}
+  m_Name: Files
+  m_EditorClassIdentifier: 
+  StagingPaths:
+  - <ManifestStagingRoot>
+  includeMetaFiles: 0
+  files:
+  - {fileID: 2800000, guid: aedd2110dd445b340b82456ae0a5b1ab, type: 3}
+  - {fileID: 4900000, guid: f5be3d5cc467521498cfb56e493e27b2, type: 3}
+  - {fileID: 4900000, guid: 7c2e56e7d1a0dff4392fc8ca2defc8c1, type: 3}
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e563561e08b6a3642a487177f5cfbb37, type: 3}
+  m_Name: EnemySkinRegistry
+  m_EditorClassIdentifier: 
+  Data:
+  - {fileID: 114211852988908172}
+  - {fileID: 114431642618062350}
+  - {fileID: 114107831304456238}
+  - {fileID: -4077804829092145557}
+  - {fileID: -7877352636452964437}
+  identity: {fileID: 114211852988908172}
+  QuickAccess: 0
+--- !u!114 &114107831304456238
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b7e13dda513544419a89926bd12ad8a, type: 3}
+  m_Name: AssemblyDefinitions
+  m_EditorClassIdentifier: 
+  StagingPaths:
+  - <ManifestPluginStaging>
+  definitions:
+  - {fileID: 5897886265953266890, guid: 21a226d5f44bfcb45a4bb2d49c2ba26e, type: 3}
+--- !u!114 &114211852988908172
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f22bb7fd1d3b56a48bc52f8e407901d6, type: 3}
+  m_Name: ManifestIdentity
+  m_EditorClassIdentifier: 
+  StagingPaths:
+  - <ManifestPluginStaging>
+  Author: Yinigma
+  Name: EnemySkinRegistry
+  Description: Compatibility mod for custom enemy skins.
+  Version: 0.0.1
+  Dependencies:
+  - {fileID: 11400000, guid: fe2b9b3edf1c4c70c2f5fa687fbcd027, type: 2}
+  - {fileID: 11400000, guid: 67eda684270a18ce25c4ac4f5e5d8fe3, type: 2}
+--- !u!114 &114431642618062350
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17d1008b78cb6e846889b7778282fbef, type: 3}
+  m_Name: AssetBundleDefinitions
+  m_EditorClassIdentifier: 
+  StagingPaths: []
+  assetBundles:
+  - assetBundleName: assets
+    assets:
+    - {fileID: 102900000, guid: 1d723acef2bc3dd47960cc255363273f, type: 3}
