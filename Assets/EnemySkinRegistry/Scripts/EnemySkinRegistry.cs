@@ -18,7 +18,7 @@ namespace AntlerShed.SkinRegistry
     {
         public const string modGUID = "antlershed.lethalcompany.enemyskinregistry";
         public const string modName = "EnemySkinRegistry";
-        public const string modVersion = "0.0.2";
+        public const string modVersion = "1.0.1";
 
         public const string GHOST_GIRL_ID = "LethalCompany.GhostGirl";
         public const string THUMPER_ID = "LethalCompany.Thumper";

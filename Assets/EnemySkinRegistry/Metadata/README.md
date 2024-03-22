@@ -19,25 +19,47 @@ This mod gives developers a means to register client-side enemy skins to be mutu
 
 #### Planned
 - Event Listeners for remaining vanilla enemies
+- Default configurations for modded moons
 
 ## User Guide
 
 The enemy skin configuration is accessible through the Lethal Config menu.
 
-The top bar will let you scroll through the registered enemies. Use the right and left arrows to navigate through them. The name of the enemy in the middle will have its configuration displayed in the rest of the ui below.
+![The skin configuration menu as it appears in the Lethal Company GUI](https://github.com/Yinigma/EnemySkinRegistry/blob/main/Images/menu.PNG?raw=true)
 
-The panel in the lower left may be used to activate and de-activate registered skins. Click the skin's icon on the left side of each entry to toggle whether an enemy can spawn with this skin or not. Deactivation works mid round to allow for buggy skins to be removed if they are causing problems. This is the only time where adjusting the config will change any already-spawned skins.
+The top bar will let you scroll through the registered enemies. 
+Use the right and left arrows to navigate through them. The name of the enemy in the middle will have its configuration displayed in the rest of the ui below.
 
-The panel in the lower right is used to configure the likelihood of a skin being selected when an enemy of a particular type spawns. Each moon can be given its own distribution of skins. The "Default" distribution is for any moon that does not have an explicit distribution. Each skin on each moon can be given a frequency value between 0 and 100 (inclusive). The actual chance that a skin within a distribution is selected to be applied to an enemy is given by its frequency value over the sum total of all frequency values in that distribution (including the vanilla value). If the sum of all frequency values is zero, the vanilla appearance is selected and no skin is applied. Deactivated skins are not considered.
+![The skin configuration menu showing an alternate enemy configuration](https://github.com/Yinigma/EnemySkinRegistry/blob/main/Images/MenuSwitchEnemy.PNG?raw=true)
+
+The panel in the lower left may be used to activate and de-activate registered skins. Click the skin's icon on the left side of each entry to toggle whether an enemy can spawn with this skin or not. Deactivation works mid round to allow for buggy skins to be removed if they are causing problems. This is the only time where adjusting the config will change any already-spawned enemy.
+
+![The active skin section of the skin configuration menu, showing a deactivated skin](https://github.com/Yinigma/EnemySkinRegistry/blob/main/Images/menuDeactivated.PNG?raw=true)
+
+The panel in the lower right is used to configure the likelihood of a skin being selected when an enemy of a particular type spawns. Each moon can be given its own distribution of skins. The "Default" distribution is for any moon that does not have an explicit distribution. Add a skin to a distribution by clicking the "Add Skin..." dropdown on a configuration.
+
+![The add skin dropdown being expanded](https://github.com/Yinigma/EnemySkinRegistry/blob/main/Images/menuAddSkin.PNG?raw=true)
+
+Each skin on each moon can be given a frequency value between 0 and 100 (inclusive). The actual chance that a skin within a distribution is selected to be applied to an enemy is given by its frequency value over the sum total of all frequency values in that distribution (including the vanilla value). If the sum of all frequency values is zero, the vanilla appearance is selected and no skin is applied. Deactivated skins are not considered.
+
+Add a distribution for a moon by clicking the "Add Moon..." dropdown.
+
+![The expanded add moon dropdown](https://github.com/Yinigma/EnemySkinRegistry/blob/main/Images/menuAddMoon.PNG?raw=true)
+
+![The distribution menu added with the new moon configuration](https://github.com/Yinigma/EnemySkinRegistry/blob/main/Images/MenuAddedMoon.PNG?raw=true)
 
 Finally, hit the "Save Config" button to save any changes. Changes are immediately applied to skin selection rates and will affect any enemies that spawn after. Changes will not affect enemies that have already spawned except in the case of deactivating skins.
 ## For Developers
 
+### Getting this mod as a dependency
+
+To add this mod to your project, I'd recommend using [ThunderKit](https://github.com/PassivePicasso/ThunderKit). But if you'd rather avoid using it, you can simply download this mod and use it like a unity package.
+
 ### Adding a Custom Skin Implementation
 
-This mod has a companion mod with default skin implementations that allows for a codeless approach. However, if you wish to create custom skin or adapt an existing skin to be compatible with this mod, doing so is fairly straightforward. 
+This mod has a [companion mod](https://thunderstore.io/c/lethal-company/p/AntlerShed/EnemySkinKit/) with default skin implementations that allow for a codeless approach. However, if that approach is too limiting for what you need to get done, then you can still create a skin mod that's compatible with this one by following these steps. For this I'm assuming you have some programming experience.
 
-1. #### Implement the Skin interface
+#### 1. Implement the Skin interface
 Implementors of the Skin interface are required to provide a handful of metadata:
     
 - Label - The name of the skin as it will show up in the configuration menu
@@ -55,7 +77,7 @@ class MySkin : Skin
     }
 }
 ```
-2. #### Implement the Skinner interface
+#### 2. Implement the Skinner interface
 The Skinner interface is only required to implement two methods:
 ```csharp
 class MySkinner : Skinner
@@ -76,7 +98,7 @@ class MySkinner : Skinner
 
 For vanilla enemies, the game object passed to these methods is the one containing the EnemyAI component. Applying a skin to a modded enemy will require the author of the enemy mod to add calls to the registry from their logic, or third-party patching. This is covered elswhere in this document.
 
-3. #### Call RegisterSkin
+#### 3. Call RegisterSkin
 
 Once you have implemented both of these classes, call the following from the Awake method in your plugin:
 ```csharp

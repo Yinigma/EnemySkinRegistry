@@ -120,7 +120,7 @@ namespace AntlerShed.SkinRegistry.View
 
 
                 //Default distribution
-                vanillaLabel.text = $"Vanilla - {(int)(cfg.VanillaFrequency * 100)}%";
+                vanillaLabel.text = $"Vanilla - {(int)(cfg.VanillaFrequency * 100)}";
                 vanillaSlider.onValueChanged.RemoveAllListeners();
                 vanillaSlider.value = cfg.VanillaFrequency;
                 vanillaSlider.onValueChanged.AddListener
