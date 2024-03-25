@@ -138,7 +138,19 @@ namespace AntlerShed.SkinRegistry.Events
 
     public interface GhostGirlEventHandler : EnemyEventHandler    
     {
+        public void OnChoosePlayer(DressGirlAI ghostGirl, PlayerControllerB target);
 
+        public void OnStartChasing(DressGirlAI ghostGirl);
+
+        public void OnStopChasing(DressGirlAI ghostGirl);
+
+        public void OnKillPlayer(DressGirlAI ghostGirl, PlayerControllerB player);
+
+        public void OnHide(DressGirlAI ghostGirl);
+
+        public void OnShow(DressGirlAI ghostGirl);
+
+        public void OnStartToDisappear(DressGirlAI ghostGirl);
     }
 
     public interface HoarderBugEventHandler : EnemyEventHandler    

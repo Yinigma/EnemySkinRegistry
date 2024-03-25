@@ -124,6 +124,28 @@ namespace AntlerShed.SkinRegistry
             }
         }
 
+        [HarmonyPostfix]
+        [HarmonyPatch(nameof(EnemyAI.EnableEnemyMesh))]
+        static void PostFixEnableMeshes(EnemyAI __instance, bool enable)
+        {
+            List<EnemyEventHandler> handlers = EnemySkinRegistry.GetEnemyEventHandlers(__instance);
+            if(__instance is DressGirlAI)
+            {
+                if (enable)
+                {
+                    handlers.ForEach((handler) => (handler as GhostGirlEventHandler)?.OnShow(__instance as DressGirlAI));
+                    if (EnemySkinRegistry.LogLevelSetting >= LogLevel.INFO) EnemySkinRegistry.SkinLogger.LogInfo("Ghost Girl Set to Show");
+                }
+                else
+                {
+                    handlers.ForEach((handler) => (handler as GhostGirlEventHandler)?.OnHide(__instance as DressGirlAI));
+                    if (EnemySkinRegistry.LogLevelSetting >= LogLevel.INFO) EnemySkinRegistry.SkinLogger.LogInfo("Ghost Girl Set to Hide");
+
+                }
+            }
+            
+        }
+
         private class EnemyViewState
         {
             public bool ventAnimationFinished;

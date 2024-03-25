@@ -34,6 +34,7 @@ MonoBehaviour:
   - {fileID: 2800000, guid: aedd2110dd445b340b82456ae0a5b1ab, type: 3}
   - {fileID: 4900000, guid: f5be3d5cc467521498cfb56e493e27b2, type: 3}
   - {fileID: 4900000, guid: 7c2e56e7d1a0dff4392fc8ca2defc8c1, type: 3}
+  - {fileID: 4900000, guid: 37c63435d42bf9b45ac95a1ece9a3703, type: 3}
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -87,7 +88,7 @@ MonoBehaviour:
   Author: Yinigma
   Name: EnemySkinRegistry
   Description: Compatibility mod for custom enemy skins.
-  Version: 1.0.1
+  Version: 1.1.0
   Dependencies:
   - {fileID: 11400000, guid: fe2b9b3edf1c4c70c2f5fa687fbcd027, type: 2}
   - {fileID: 11400000, guid: 67eda684270a18ce25c4ac4f5e5d8fe3, type: 2}
