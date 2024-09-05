@@ -36,4 +36,11 @@ namespace AntlerShed.SkinRegistry
             Icon = icon ?? Texture2D.whiteTexture;
         }*/
     }
+
+    public interface NestSkin
+    {
+        public string SkinId { get; }
+
+        public Skinner CreateNestSkinner();
+    }
 }

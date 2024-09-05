@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -22,10 +20,11 @@ namespace AntlerShed.SkinRegistry.View
         [SerializeField]
         private TextMeshProUGUI percentage;
 
-        internal void Rebuild(ConfigurationViewModel viewModel, SkinConfigEntry skinEntry, string moon, bool isDefault)
+        internal void Rebuild(ConfigurationViewModel viewModel, SkinConfigEntry skinEntry, string moon, bool isDefault, float total)
         {
+            float frequency = viewModel.CurrentSpawn == SpawnLocation.INDOOR ? skinEntry.IndoorFrequency : skinEntry.OutdoorFrequency;
             slider.onValueChanged.RemoveAllListeners();
-            slider.value = skinEntry.Frequency;
+            slider.value = frequency;
             slider.onValueChanged.AddListener
             (
                 (value) =>
@@ -38,7 +37,6 @@ namespace AntlerShed.SkinRegistry.View
                     {
                         viewModel.AdjustMoonSkinWeight(moon, skinEntry.SkinId, value);
                     }
-
                 }
             );
             try
@@ -49,7 +47,7 @@ namespace AntlerShed.SkinRegistry.View
             {
                 label.text = $"{skinEntry.SkinId}";
             }
-            percentage.text = $"- {(int)(skinEntry.Frequency * 100)}";
+            percentage.text = $": {(total > 0.0f ? (int)Mathf.Round(frequency / total * 100.0f) : 0)}%";
             removeButton.onClick.RemoveAllListeners();
             removeButton.onClick.AddListener
             (
@@ -66,6 +64,11 @@ namespace AntlerShed.SkinRegistry.View
                     
                 }
             );
+            if (EnemySkinRegistry.ClientSyncActive)
+            {
+                slider.interactable = false;
+                slider.fillRect.GetComponent<Image>().canvasRenderer.SetAlpha(0.5f);
+            }
         }
     }
 }

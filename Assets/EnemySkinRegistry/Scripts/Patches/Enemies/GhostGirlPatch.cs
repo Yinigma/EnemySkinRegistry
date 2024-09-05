@@ -1,15 +1,15 @@
 using AntlerShed.SkinRegistry.Events;
 using GameNetcodeStuff;
 using HarmonyLib;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace AntlerShed.SkinRegistry
 {
-    [HarmonyPatch(typeof(DressGirlAI))]
     class GhostGirlPatch
     {
         [HarmonyPostfix]
-        [HarmonyPatch("ChoosePlayerToHaunt")]
+        [HarmonyPatch(typeof(DressGirlAI), "ChoosePlayerToHaunt")]
         static void PostfixChoosePlayer(DressGirlAI __instance)
         {
             EnemySkinRegistry.GetEnemyEventHandlers(__instance).ForEach((handler) => (handler as GhostGirlEventHandler)?.OnChoosePlayer(__instance, __instance.hauntingPlayer));
@@ -17,7 +17,7 @@ namespace AntlerShed.SkinRegistry
         }
 
         [HarmonyPostfix]
-        [HarmonyPatch("BeginChasing")]
+        [HarmonyPatch(typeof(DressGirlAI), "BeginChasing")]
         static void PostfixBeginChasing(DressGirlAI __instance)
         {
             if (__instance.currentBehaviourStateIndex != 1)
@@ -28,7 +28,7 @@ namespace AntlerShed.SkinRegistry
         }
 
         [HarmonyPostfix]
-        [HarmonyPatch("StopChasing")]
+        [HarmonyPatch(typeof(DressGirlAI), "StopChasing")]
         static void PostfixStopChasing(DressGirlAI __instance)
         {
 
@@ -37,7 +37,7 @@ namespace AntlerShed.SkinRegistry
         }
 
         [HarmonyPrefix]
-        [HarmonyPatch("disappearOnDelay")]
+        [HarmonyPatch(typeof(DressGirlAI), "disappearOnDelay")]
         static void PrefixDisappear(DressGirlAI __instance)
         {
 
@@ -46,7 +46,7 @@ namespace AntlerShed.SkinRegistry
         }
 
         [HarmonyPrefix]
-        [HarmonyPatch(nameof(DressGirlAI.OnCollideWithPlayer))]
+        [HarmonyPatch(typeof(DressGirlAI), nameof(DressGirlAI.OnCollideWithPlayer))]
         static void PrefixOnCollideWithPlayer(DressGirlAI __instance, Collider other)
         {
             if (!__instance.hauntingLocalPlayer)
@@ -66,6 +66,27 @@ namespace AntlerShed.SkinRegistry
                 {
                     EnemySkinRegistry.GetEnemyEventHandlers(__instance).ForEach((handler) => (handler as GhostGirlEventHandler)?.OnKillPlayer(__instance, __instance.hauntingPlayer));
                     if (EnemySkinRegistry.LogLevelSetting >= LogLevel.INFO) EnemySkinRegistry.SkinLogger.LogInfo("Ghost Girl killed player");
+                }
+            }
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(EnemyAI), nameof(EnemyAI.EnableEnemyMesh))]
+        static void PostFixEnableMeshes(EnemyAI __instance, bool enable)
+        {
+            List<EnemyEventHandler> handlers = EnemySkinRegistry.GetEnemyEventHandlers(__instance);
+            if (__instance is DressGirlAI)
+            {
+                if (enable)
+                {
+                    handlers.ForEach((handler) => (handler as GhostGirlEventHandler)?.OnShow(__instance as DressGirlAI));
+                    if (EnemySkinRegistry.LogLevelSetting >= LogLevel.INFO) EnemySkinRegistry.SkinLogger.LogInfo("Ghost Girl Set to Show");
+                }
+                else
+                {
+                    handlers.ForEach((handler) => (handler as GhostGirlEventHandler)?.OnHide(__instance as DressGirlAI));
+                    if (EnemySkinRegistry.LogLevelSetting >= LogLevel.INFO) EnemySkinRegistry.SkinLogger.LogInfo("Ghost Girl Set to Hide");
+
                 }
             }
         }

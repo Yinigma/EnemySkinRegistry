@@ -57,20 +57,21 @@ namespace AntlerShed.SkinRegistry.View
             (
                 new MoonInfo[]
                 {
-                    new MoonInfo("Sanctuary", "bimple.CoolMoons.SanctuaryMoon"),
-                    new MoonInfo("Detritus", "bimple.CoolMoons.DetritusMoon"),
-                    new MoonInfo("Filament", "bimple.CoolMoons.FilamentMoon"),
-                    new MoonInfo("Abnegation", "bimple.CoolMoons.AbnegationMoon"),
-                    new MoonInfo("Intent", "hideyMan.HaloMoons.Intent"),
-                    new MoonInfo("Persistence", "gabule.Persistence"),
-                    new MoonInfo("Gratitude", "gabule.Gratitude")
+                    new MoonInfo("Sanctuary", "bimple.CoolMoons.SanctuaryMoon", new HashSet<string>(){ "valley" }),
+                    new MoonInfo("Detritus", "bimple.CoolMoons.DetritusMoon", new HashSet<string>(){ "valley" }),
+                    new MoonInfo("Filament", "bimple.CoolMoons.FilamentMoon", new HashSet<string>(){ "tundra" }),
+                    new MoonInfo("Abnegation", "bimple.CoolMoons.AbnegationMoon", new HashSet<string>(){ "tundra" }),
+                    new MoonInfo("Intent", "hideyMan.HaloMoons.Intent", new HashSet<string>(){ "marsh" }),
+                    new MoonInfo("Persistence", "gabule.Persistence", new HashSet<string>(){ "tundra" }),
+                    new MoonInfo("Gratitude", "gabule.Gratitude", new HashSet<string>(){ "valley" })
                 },
+                new string[] { "valley", "tundra", "marsh" },
                 new Dictionary<string, EnemyInfo>
                 {
-                    { "Bracken", new EnemyInfo("Bracken", "Bracken") },
-                    { "Pinkman", new EnemyInfo("Pinkman", "Pinkman") },
-                    { "Wiggler", new EnemyInfo("Wiggler", "Wiggler") },
-                    { "Thumper", new EnemyInfo("Thumper", "Thumper") }
+                    { "Bracken", new EnemyInfo("Bracken", "Bracken", SpawnLocation.INDOOR) },
+                    { "Pinkman", new EnemyInfo("Pinkman", "Pinkman", SpawnLocation.INDOOR) },
+                    { "Wiggler", new EnemyInfo("Wiggler", "Wiggler", SpawnLocation.OUTDOOR) },
+                    { "Thumper", new EnemyInfo("Thumper", "Thumper", SpawnLocation.INDOOR) }
                 },
                 new Dictionary<string, Skin[]>
                 {
@@ -79,53 +80,70 @@ namespace AntlerShed.SkinRegistry.View
                     { "Bracken", brackenSkins},
                     { "Thumper", thumperSkins }
                 },
-                new EnemyConfiguration[]
-                {
-                    new EnemyConfiguration("Wiggler", wigglerSkins),
-                    new EnemyConfiguration("Thumper", thumperSkins),
-                    new EnemyConfiguration("Pinkman", pinkmanSkins),
-                    new EnemyConfiguration
-                    (
-                        "Bracken", 
-                        new MapConfiguration
+                new string[] { }, 
+                new Profile
+                (
+                    new EnemyConfiguration[]
+                    {
+                        new EnemyConfiguration("Wiggler", wigglerSkins),
+                        new EnemyConfiguration("Thumper", thumperSkins),
+                        new EnemyConfiguration("Pinkman", pinkmanSkins),
+                        new EnemyConfiguration
                         (
-                            0.5f,
-                            new SkinConfigEntry[]
-                            {
-                                new SkinConfigEntry(0.5f, "AntlerShed.BitoSkin")
-                            }
-                        ), 
-                        new MapConfiguration[]
-                        {
+                            "Bracken",
                             new MapConfiguration
                             (
-                                "bimple.CoolMoons.SanctuaryMoon",
-                                0.0f,
-                                new SkinConfigEntry[]
-                                {
-                                    new SkinConfigEntry(0.25f, "AntlerShed.BitoSkin")
-                                }
-                            ),
-                            new MapConfiguration
-                            (
-                                "bimple.CoolMoons.AbnegationMoon",
-                                0.3f,
-                                new SkinConfigEntry[]
-                                {
-                                    new SkinConfigEntry(1.0f, "AntlerShed.BitoSkin"),
-                                    new SkinConfigEntry(0.34f, "GokuBracken")
-                                }
-                            ),
-                            new MapConfiguration
-                            (
-                                "bimple.CoolMoons.FilamentMoon",
+                                0.5f,
                                 0.2f,
-                                new SkinConfigEntry[] { }
-                            )
-                        },
-                        new string[]{ "AntlerShed.BitoSkin" }
-                    )
+                                new SkinConfigEntry[]
+                                {
+                                    new SkinConfigEntry(0.5f, "AntlerShed.BitoSkin")
+                                }
+                            ),
+                            new MapConfiguration[]
+                            {
+                                new MapConfiguration
+                                (
+                                    "bimple.CoolMoons.SanctuaryMoon",
+                                    0.0f,
+                                    0.2f,
+                                    new SkinConfigEntry[]
+                                    {
+                                        new SkinConfigEntry(0.25f, "AntlerShed.BitoSkin")
+                                    }
+                                ),
+                                new MapConfiguration
+                                (
+                                    "bimple.CoolMoons.AbnegationMoon",
+                                    0.3f,
+                                    0.2f,
+                                    new SkinConfigEntry[]
+                                    {
+                                        new SkinConfigEntry(1.0f, "AntlerShed.BitoSkin"),
+                                        new SkinConfigEntry(0.34f, "GokuBracken")
+                                    }
+                                ),
+                                new MapConfiguration
+                                (
+                                    "bimple.CoolMoons.FilamentMoon",
+                                    0.2f,
+                                    0.2f,
+                                    new SkinConfigEntry[] { }
+                                )
+                            },
+                            new string[]{ "AntlerShed.BitoSkin" }
+                        )
+                    }
+                ),
+                new Dictionary<string, string>()
+                {
+                    { "AntlerShed.BitoSkin", "Bito" }
+                },
+                new Dictionary<string, string>() 
+                {
+                    { "bimple.CoolMoons.FilamentMoon", "Filament" }
                 }
+                
             );
             menu = Instantiate(prefab, transform);
             menu.Init(viewModel);

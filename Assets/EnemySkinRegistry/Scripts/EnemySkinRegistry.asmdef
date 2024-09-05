@@ -14,7 +14,10 @@
         "Unity.Netcode.Runtime.dll",
         "0Harmony.dll",
         "Newtonsoft.Json.dll",
-        "LethalConfig.dll"
+        "LethalConfig.dll",
+        "Unity.Collections.dll",
+        "LethalLevelLoader.dll",
+        "nunit.framework.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],

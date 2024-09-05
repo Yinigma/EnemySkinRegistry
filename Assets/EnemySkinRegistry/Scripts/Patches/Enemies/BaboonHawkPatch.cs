@@ -7,10 +7,8 @@ using UnityEngine;
 namespace AntlerShed.SkinRegistry
 {
 
-    [HarmonyPatch(typeof(BaboonBirdAI))]
     class BaboonHawkPatch
     {
-        //your guess is as good as mine
         private const int NONE = 0;
         private const int INTIMIDATE = 1;
         private const int ATTACK = 2;
@@ -18,7 +16,7 @@ namespace AntlerShed.SkinRegistry
         private static Dictionary<BaboonBirdAI, BaboonHawkViewState> viewState = new Dictionary<BaboonBirdAI, BaboonHawkViewState>();
 
         [HarmonyPostfix]
-        [HarmonyPatch(nameof(BaboonBirdAI.Start))]
+        [HarmonyPatch(typeof(BaboonBirdAI), nameof(BaboonBirdAI.Start))]
         static void PostfixStart(BaboonBirdAI __instance, bool ___doingKillAnimation)
         {
             viewState[__instance] = new BaboonHawkViewState();
@@ -26,29 +24,25 @@ namespace AntlerShed.SkinRegistry
         }
 
         [HarmonyPostfix]
-        [HarmonyPatch(nameof(BaboonBirdAI.OnCollideWithPlayer))]
+        [HarmonyPatch(typeof(BaboonBirdAI), nameof(BaboonBirdAI.OnCollideWithPlayer))]
         static void PostfixOnCollideWithPlayer(BaboonBirdAI __instance, bool ___doingKillAnimation, float ___timeSinceHitting, Collider other)
         {
-            if (___timeSinceHitting >= 0.5f)
+            if (___timeSinceHitting == 0f)
             {
-                Vector3 vector = Vector3.Normalize(__instance.transform.position + Vector3.up * 0.7f - (other.transform.position + Vector3.up * 0.4f)) * 0.5f;
-                if (Physics.Linecast(__instance.transform.position + Vector3.up * 0.7f + vector, other.transform.position + Vector3.up * 0.4f, StartOfRound.Instance.collidersAndRoomMaskAndDefault, QueryTriggerInteraction.Ignore))
+                PlayerControllerB controller = __instance.MeetsStandardPlayerCollisionConditions(other, __instance.inSpecialAnimation || ___doingKillAnimation);
+                if (controller != null)
                 {
-                    PlayerControllerB controller = __instance.MeetsStandardPlayerCollisionConditions(other, __instance.inSpecialAnimation || ___doingKillAnimation);
-                    if (controller != null)
-                    {
-                        EnemySkinRegistry.GetEnemyEventHandlers(__instance).ForEach((handler) => (handler as BaboonHawkEventHandler)?.OnAttackPlayer(__instance, controller));
-                        if (EnemySkinRegistry.LogLevelSetting >= LogLevel.INFO) EnemySkinRegistry.SkinLogger.LogInfo("BB Hawk Attack Player");
-                    }
+                    EnemySkinRegistry.GetEnemyEventHandlers(__instance).ForEach((handler) => (handler as BaboonHawkEventHandler)?.OnAttackPlayer(__instance, controller));
+                    if (EnemySkinRegistry.LogLevelSetting >= LogLevel.INFO) EnemySkinRegistry.SkinLogger.LogInfo("BB Hawk Attack Player");
                 }
             }
         }
 
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(BaboonBirdAI.OnCollideWithEnemy))]
-        static void PrefixOnCollideWithEnemy(BaboonBirdAI __instance, float ___timeSinceHitting, EnemyAI enemyScript)
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(BaboonBirdAI), nameof(BaboonBirdAI.OnCollideWithEnemy))]
+        static void PostfixOnCollideWithEnemy(BaboonBirdAI __instance, float ___timeSinceHitting, EnemyAI enemyScript)
         {
-            if (!(enemyScript.enemyType == __instance.enemyType) && !(___timeSinceHitting < 0.75f) && __instance.IsOwner && enemyScript.enemyType.canDie)
+            if (___timeSinceHitting == 0f)
             {
                 EnemySkinRegistry.GetEnemyEventHandlers(__instance).ForEach((handler)=>(handler as BaboonHawkEventHandler)?.OnAttackEnemy(__instance, enemyScript));
                 if (EnemySkinRegistry.LogLevelSetting >= LogLevel.INFO) EnemySkinRegistry.SkinLogger.LogInfo("BB Hawk Attack Enemy");
@@ -57,7 +51,7 @@ namespace AntlerShed.SkinRegistry
         
 
         [HarmonyPrefix]
-        [HarmonyPatch("killPlayerAnimation")]
+        [HarmonyPatch(typeof(BaboonBirdAI), "killPlayerAnimation")]
         static void PrefixKillAnimation(BaboonBirdAI __instance, int playerObject)
         {
             PlayerControllerB killedPlayer = StartOfRound.Instance.allPlayerScripts[playerObject];
@@ -66,7 +60,7 @@ namespace AntlerShed.SkinRegistry
         }
 
         [HarmonyPostfix]
-        [HarmonyPatch(nameof(BaboonBirdAI.StopKillAnimation))]
+        [HarmonyPatch(typeof(BaboonBirdAI), nameof(BaboonBirdAI.StopKillAnimation))]
         static void PostfixStopKillAnimation(BaboonBirdAI __instance)
         {
             EnemySkinRegistry.GetEnemyEventHandlers(__instance).ForEach((handler) => (handler as BaboonHawkEventHandler)?.OnFinishKillPlayerAnimation(__instance));
@@ -74,7 +68,7 @@ namespace AntlerShed.SkinRegistry
         }
 
         [HarmonyPostfix]
-        [HarmonyPatch(nameof(BaboonBirdAI.EnemyEnterRestModeClientRpc))]
+        [HarmonyPatch(typeof(BaboonBirdAI), nameof(BaboonBirdAI.EnemyEnterRestModeClientRpc))]
         static void PostfixEnterRestMode(BaboonBirdAI __instance, bool sleep)
         {
             if (viewState.ContainsKey(__instance))
@@ -96,7 +90,7 @@ namespace AntlerShed.SkinRegistry
 
         
         [HarmonyPostfix]
-        [HarmonyPatch(nameof(BaboonBirdAI.EnemyGetUpClientRpc))]
+        [HarmonyPatch(typeof(BaboonBirdAI), nameof(BaboonBirdAI.EnemyGetUpClientRpc))]
         static void PostfixEnemyGetUp(BaboonBirdAI __instance)
         {
             if(viewState.ContainsKey(__instance) && ( viewState[__instance].sitting || viewState[__instance].sleeping ) )
@@ -108,7 +102,7 @@ namespace AntlerShed.SkinRegistry
             }
         }
 
-        [HarmonyPostfix]
+        /*[HarmonyPostfix]
         [HarmonyPatch(nameof(BaboonBirdAI.SetAggressiveModeClientRpc))]
         static void PostfixSetAggressionMode(BaboonBirdAI __instance, int mode)
         {
@@ -131,26 +125,55 @@ namespace AntlerShed.SkinRegistry
                         break;
                 }
             }
-        }
+        }*/
 
         [HarmonyPostfix]
-        [HarmonyPatch("GrabScrap")]
+        [HarmonyPatch(typeof(BaboonBirdAI), "GrabScrap")]
         static void PostfixGrabScrap(BaboonBirdAI __instance)
         {
-            (EnemySkinRegistry.GetEnemyEventHandlers(__instance) as BaboonHawkEventHandler)?.OnPickUpScrap(__instance, __instance.heldScrap);
+            EnemySkinRegistry.GetEnemyEventHandlers(__instance).ForEach((handler) => (handler as BaboonHawkEventHandler)?.OnPickUpScrap(__instance, __instance.heldScrap));
             if (EnemySkinRegistry.LogLevelSetting >= LogLevel.INFO) EnemySkinRegistry.SkinLogger.LogInfo("BB Hawk pick up scrap");
         }
 
         [HarmonyPostfix]
-        [HarmonyPatch("DropScrap")]
+        [HarmonyPatch(typeof(BaboonBirdAI), "DropScrap")]
         static void PostfixDropScrap(BaboonBirdAI __instance)
         {
-            (EnemySkinRegistry.GetEnemyEventHandlers(__instance) as BaboonHawkEventHandler)?.OnDropScrap(__instance);
+            EnemySkinRegistry.GetEnemyEventHandlers(__instance).ForEach((handler) => (handler as BaboonHawkEventHandler)?.OnDropScrap(__instance));
             if (EnemySkinRegistry.LogLevelSetting >= LogLevel.INFO) EnemySkinRegistry.SkinLogger.LogInfo("BB Hawk Drop Scrap");
         }
 
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(BaboonBirdAI), nameof(BaboonBirdAI.Update))]
+        static void PrefixUpdate(BaboonBirdAI __instance, int ___previousAggressiveMode, int ___aggressiveMode)
+        {
+            if (!__instance.isEnemyDead)
+            {
+                if (viewState.ContainsKey(__instance) && viewState[__instance].aggressionState != ___aggressiveMode)
+                {
+                    viewState[__instance].aggressionState = ___aggressiveMode;
+                    switch (___aggressiveMode)
+                    {
+                        case NONE:
+                            EnemySkinRegistry.GetEnemyEventHandlers(__instance).ForEach((handler) => (handler as BaboonHawkEventHandler)?.OnCalmDown(__instance));
+                            if (EnemySkinRegistry.LogLevelSetting >= LogLevel.INFO) EnemySkinRegistry.SkinLogger.LogInfo("BB Calm Down");
+                            break;
+                        case INTIMIDATE:
+                            EnemySkinRegistry.GetEnemyEventHandlers(__instance).ForEach((handler) => (handler as BaboonHawkEventHandler)?.OnIntimidate(__instance));
+                            if (EnemySkinRegistry.LogLevelSetting >= LogLevel.INFO) EnemySkinRegistry.SkinLogger.LogInfo("BB Hawk Intimidate");
+                            break;
+                        case ATTACK:
+                            EnemySkinRegistry.GetEnemyEventHandlers(__instance).ForEach((handler) => (handler as BaboonHawkEventHandler)?.OnEnterAttackMode(__instance));
+                            if (EnemySkinRegistry.LogLevelSetting >= LogLevel.INFO) EnemySkinRegistry.SkinLogger.LogInfo("BB Attack State");
+                            break;
+                    }
+                }
+            }
+            
+        }
+
         [HarmonyPostfix]
-        [HarmonyPatch(nameof(BaboonBirdAI.Update))]
+        [HarmonyPatch(typeof(BaboonBirdAI), nameof(BaboonBirdAI.Update))]
         static void PostfixUpdate(BaboonBirdAI __instance, bool ___doingKillAnimation)
         {
             if(viewState.ContainsKey(__instance))
@@ -159,11 +182,21 @@ namespace AntlerShed.SkinRegistry
                 {
                     if (!___doingKillAnimation)
                     {
-                        (EnemySkinRegistry.GetEnemyEventHandlers(__instance) as BaboonHawkEventHandler)?.OnFinishKillPlayerAnimation(__instance);
+                        EnemySkinRegistry.GetEnemyEventHandlers(__instance).ForEach((handler) => (handler as BaboonHawkEventHandler)?.OnFinishKillPlayerAnimation(__instance));
                         if (EnemySkinRegistry.LogLevelSetting >= LogLevel.INFO) EnemySkinRegistry.SkinLogger.LogInfo("BB Hawk End Kill");
                     }
                     viewState[__instance].inKillAnimation = ___doingKillAnimation;
                 }
+            }
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(EnemyAI), "OnDestroy")]
+        static void PostfixDestroyed(EnemyAI __instance)
+        {
+            if (__instance is BaboonBirdAI && __instance != null && viewState.ContainsKey(__instance as BaboonBirdAI))
+            {
+                RemoveViewState(__instance as BaboonBirdAI);
             }
         }
 
@@ -172,7 +205,6 @@ namespace AntlerShed.SkinRegistry
             viewState.Remove(__instance);
         }
 
-        //This is a big hack, but otherwise I'm gonna have to do runtime netcode patches for what's supposed to be a client-side mod. Nah.
         private class BaboonHawkViewState
         {
             public bool inKillAnimation;

@@ -1,10 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 
@@ -118,11 +116,14 @@ namespace AntlerShed.SkinRegistry.View
                     removeMoonButton.onClick.AddListener(() => viewModel.RemoveMoonConfig(moonId));
                 }
 
+                float vanillaFreq = viewModel.SelectedSpawn == SpawnLocation.INDOOR ? cfg.IndoorVanillaFrequency : cfg.OutdoorVanillaFrequency;
+                float total = cfg.Distribution.Aggregate(0.0f, (float value, SkinConfigEntry entry) => value + (viewModel.SelectedSpawn == SpawnLocation.INDOOR ? entry.IndoorFrequency : entry.OutdoorFrequency));
+                total += vanillaFreq;
 
                 //Default distribution
-                vanillaLabel.text = $"Vanilla - {(int)(cfg.VanillaFrequency * 100)}";
+                vanillaLabel.text = $"Vanilla: {(total > 0.0f ? (int)Mathf.Round(vanillaFreq / total * 100.0f) : 100)}%";
                 vanillaSlider.onValueChanged.RemoveAllListeners();
-                vanillaSlider.value = cfg.VanillaFrequency;
+                vanillaSlider.value = viewModel.SelectedSpawn == SpawnLocation.INDOOR ? cfg.IndoorVanillaFrequency : cfg.OutdoorVanillaFrequency;
                 vanillaSlider.onValueChanged.AddListener
                 (
                     (value) =>
@@ -160,11 +161,18 @@ namespace AntlerShed.SkinRegistry.View
 
                 for (int i = 0; i < freqViews.Count; i++)
                 {
-                    freqViews[i].Rebuild(viewModel, cfg.Distribution[i], moonId, isDefault);
+                    freqViews[i].Rebuild(viewModel, cfg.Distribution[i], moonId, isDefault, total);
                 }
 
+                if (EnemySkinRegistry.ClientSyncActive)
+                {
+                    addSkinDropdown.interactable = false;
+                    vanillaSlider.interactable = false;
+                    vanillaSlider.fillRect.GetComponent<Image>().canvasRenderer.SetAlpha(0.5f);
+                }
             }
             catch(InvalidOperationException e) { }
+
         }
     }
 }

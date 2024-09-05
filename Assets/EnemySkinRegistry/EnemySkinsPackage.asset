@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Active: 1
   PerManifest: 1
-  ListType: 0
-  Manifests: []
+  ListType: 1
+  Manifests:
+  - {fileID: 11400000, guid: 91ffb3b042ebcd64985f3fb734517878, type: 2}
   ReplaceDirectory: 1
   Recursive: 1
   SourceRequired: 1

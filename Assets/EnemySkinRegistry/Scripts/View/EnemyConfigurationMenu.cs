@@ -11,6 +11,9 @@ namespace AntlerShed.SkinRegistry.View
         internal MoonInfo[] Moons { get; }
         internal Dictionary<string, Skin[]> Skins { get; }
         internal Dictionary<string, EnemyInfo> Enemies { get; }
+        internal List<KeyValuePair<string, string>> DefaultMoonConfigs { get; }
+        internal List<KeyValuePair<string, string>> DefaultSkinConfigs { get; }
+
         internal EnemyConfiguration[] Configs { get; }
         private Dictionary<string, EnemyConfiguration> updatedEntries;
         private string selectedEnemy;
@@ -40,7 +43,19 @@ namespace AntlerShed.SkinRegistry.View
 
         internal Action skinRemovedFromDefault;
 
-        public ConfigurationViewModel(MoonInfo[] moons, Dictionary<string, EnemyInfo> enemies, Dictionary<string, Skin[]> enemySkins, EnemyConfiguration[] configEntries)
+        internal Action defaultSkinConfigApplied;
+
+        internal Action defaultMoonConfigApplied;
+
+        public ConfigurationViewModel
+        (
+            MoonInfo[] moons, 
+            Dictionary<string, EnemyInfo> enemies, 
+            Dictionary<string, Skin[]> enemySkins, 
+            EnemyConfiguration[] configEntries,
+            Dictionary<string, string> skinDefaults,
+            Dictionary<string, string> moonDefaults
+        )
         {
             Moons = moons.ToArray();
             Skins = new Dictionary<string, Skin[]>(enemySkins);
@@ -48,6 +63,10 @@ namespace AntlerShed.SkinRegistry.View
             Configs = configEntries.ToArray();
             updatedEntries = configEntries.ToDictionary((cfg) => cfg.EnemyId, (cfg) => cfg);
             selectedEnemy = Configs[0].EnemyId;
+            DefaultMoonConfigs = moonDefaults.Keys.Select((key) => new KeyValuePair<string, string>(key, moonDefaults[key])).ToList();
+            DefaultMoonConfigs.Sort((a, b) => a.Value.CompareTo(b.Value));
+            DefaultSkinConfigs = skinDefaults.Keys.Select((key) => new KeyValuePair<string, string>(key, skinDefaults[key])).ToList();
+            DefaultSkinConfigs.Sort((a, b) => a.Value.CompareTo(b.Value));
         }
 
         internal void Exit(){ }
@@ -442,6 +461,33 @@ namespace AntlerShed.SkinRegistry.View
                 config.VanillaFrequency,
                 config.Distribution.Select((skin) => new SkinConfigEntry(skin.SkinId.Equals(skinId) ? newRatio : skin.Frequency, skin.SkinId)).ToArray()
             );
+        }
+
+        internal void ReapplyDefaultMoonConfiguration(string moonId)
+        {
+            foreach(EnemyConfiguration cfg in EnemySkinRegistry.ApplyDefaultMoonConfiguration(moonId, updatedEntries.Values.ToArray()))
+            {
+                if (updatedEntries.ContainsKey(cfg.EnemyId))
+                {
+                    EnemySkinRegistry.SkinLogger.LogInfo("applying moon config from gui");
+                    updatedEntries[cfg.EnemyId] = cfg;
+                    UnsavedChanges = true;
+                    defaultMoonConfigApplied?.Invoke();
+                }
+            }
+        }
+
+        internal void ReapplyDefaultSkinConfiguration(string skinId)
+        {
+            foreach (string enemyId in Skins.Keys)
+            {
+                if(Skins[enemyId].Any((skin)=>skin.Id.Equals(skinId)) && updatedEntries.ContainsKey(enemyId))
+                {
+                    updatedEntries[enemyId] = EnemySkinRegistry.ApplyDefaultSkinConfiguration(skinId, updatedEntries[enemyId]);
+                    UnsavedChanges = true;
+                    defaultSkinConfigApplied?.Invoke();
+                }
+            }
         }
 
         internal void Save()

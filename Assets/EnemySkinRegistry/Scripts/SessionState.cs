@@ -6,13 +6,18 @@ namespace AntlerShed.SkinRegistry
 {
     class SessionState
     {
-        private System.Random randomNumberGenerator = new System.Random(13);
-        public string LevelId { get; private set; }
         private List<SkinInstance> activeSkinners = new List<SkinInstance>();
+        private Dictionary<EnemyAINestSpawnObject, string> activeNestSkins = new Dictionary<EnemyAINestSpawnObject, string>();
+        /// <summary>
+        /// Some enemies have their nest deleted before they finish spawning, so the skin id that was on their nest has to be saved
+        /// </summary>
+        private Dictionary<GameObject, string> stagedSkins = new Dictionary<GameObject, string>();
 
-        internal void ClearActiveSkinners()
+        internal void ClearState()
         {
             activeSkinners.Clear();
+            stagedSkins.Clear();
+            activeNestSkins.Clear();
         }
 
         internal void AddSkinner(GameObject enemyInstance, string skinId, string enemyType, Skinner skinner)
@@ -41,7 +46,7 @@ namespace AntlerShed.SkinRegistry
             }
         }
 
-        internal List<GameObject> GetSkinnedEnemies()
+        internal List<GameObject> GetSkinnedObject()
         {
             return activeSkinners.Select((active)=>active.SkinnedObject).ToList();
         }
@@ -76,21 +81,72 @@ namespace AntlerShed.SkinRegistry
             return null;
         }
 
-        internal void SetRandomNumberGenerator(int seed)
+        internal void AddSkinNest(EnemyAINestSpawnObject nest, string skinId)
         {
-            randomNumberGenerator = new System.Random(seed);
+            if (nest != null)
+            {
+                activeNestSkins.Add(nest, skinId);
+            }
         }
 
-        internal void SetCurrentLevel(string levelId)
+        internal void AddNest(EnemyAINestSpawnObject nest)
         {
-            LevelId = levelId;
+            if (nest != null)
+            {
+                activeNestSkins.Add(nest, null);
+            }
         }
 
-        internal float GetRandom()
+        internal void StageSkinForSpawn(EnemyAINestSpawnObject nest, GameObject enemy)
         {
-            return (float) randomNumberGenerator.NextDouble();
+            if(enemy != null && nest != null)
+            {
+                if (activeNestSkins.ContainsKey(nest))
+                {
+                    stagedSkins.Add(enemy, activeNestSkins[nest]);
+                }
+            }
+        }
+
+        internal bool SpawnedFromNest(GameObject enemy)
+        {
+            return stagedSkins.ContainsKey(enemy);
+        }
+
+        internal string RetrieveStagedSkin(GameObject enemy)
+        {
+            if (enemy != null)
+            {
+                if (stagedSkins.ContainsKey(enemy))
+                {
+                    return stagedSkins[enemy];
+                }
+            }
+            return null;
+        }
+
+        private struct XORShift32
+        {
+            internal uint Value { get; private set; }
+            internal XORShift32(uint seed)
+            {
+                Value = seed;
+            }
+
+            internal void Next()
+            {
+                Value ^= Value << 13;
+                Value ^= Value >> 17;
+                Value ^= Value << 5;
+            }
+
+            internal float AsFloat()
+            {
+                return ((float)(Value%4096)) / 4096.0f;
+            }
         }
     }
+
 
     struct SkinInstance
     {

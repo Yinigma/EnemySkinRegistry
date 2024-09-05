@@ -26,7 +26,10 @@ namespace AntlerShed.SkinRegistry.Events
                 {
                     eventHandlers.Add(instance, new List<EnemyEventHandler>());
                 }
-                return eventHandlers[instance];
+                if (eventHandlers[instance] != null)
+                {
+                    return eventHandlers[instance];
+                }
             }
             return new List<EnemyEventHandler>();
         }

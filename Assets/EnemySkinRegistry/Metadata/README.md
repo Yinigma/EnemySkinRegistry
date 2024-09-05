@@ -6,22 +6,25 @@ This mod gives developers a means to register client-side enemy skins to be mutu
 
 ## Features
 
-#### Completed
+### Completed
 - LethalConfig-accessible GUI for end users to set configurations 
 - Registration of custom Skin implementations
 - Configurable distribution of skins per enemy
 - Configurable distribution of skins per moon
+- Automatic registration for LLL moons
+- Named skin configuration profiles
+- Events on vanilla enemies for making fully custom skins with fewer patches (send a request for an event type to my discord or as a feature request on github)
 
-#### Implemented but not fully tested
+### Implemented but not fully tested
 - Custom Enemy Registration
-- Custom Moon Registration
-- Event Listeners for BaboonHawk and Bracken
+- Config synchronization for players that have the same mods installed
 
-#### Planned
-- Event Listeners for remaining vanilla enemies
-- Default configurations for modded moons
+### Planned
+- More Event listeners
 
 ## User Guide
+
+###Configuration Menu
 
 The enemy skin configuration is accessible through the Lethal Config menu.
 
@@ -40,7 +43,7 @@ The panel in the lower right is used to configure the likelihood of a skin being
 
 ![The add skin dropdown being expanded](https://github.com/Yinigma/EnemySkinRegistry/blob/main/Images/menuAddSkin.PNG?raw=true)
 
-Each skin on each moon can be given a frequency value between 0 and 100 (inclusive). The actual chance that a skin within a distribution is selected to be applied to an enemy is given by its frequency value over the sum total of all frequency values in that distribution (including the vanilla value). If the sum of all frequency values is zero, the vanilla appearance is selected and no skin is applied. Deactivated skins are not considered.
+Each skin on each moon can be set to spawn more or less frequently. Setting the bar to the max will make it take up all of its fair share of the remaining spawn chance, and setting the bar to nothing will make it never spawn. So if you have three skins all set to the max value, they'll each have a 1/3 chance of spawning. But if you set two of those skins to half, then the distribution becomes 1/4, 1/4, 1/2.
 
 Add a distribution for a moon by clicking the "Add Moon..." dropdown.
 
@@ -48,7 +51,23 @@ Add a distribution for a moon by clicking the "Add Moon..." dropdown.
 
 ![The distribution menu added with the new moon configuration](https://github.com/Yinigma/EnemySkinRegistry/blob/main/Images/MenuAddedMoon.PNG?raw=true)
 
+Any default configurations modders have included with their mod will appear in the dropdown menus just above the "Save Config" section of the GUI. Select "Moon" or "Skin" from the first dropdown and your desired mod in the second dropdown, then click the "Reapply" button to apply it to the working configuration.
+
 Finally, hit the "Save Config" button to save any changes. Changes are immediately applied to skin selection rates and will affect any enemies that spawn after. Changes will not affect enemies that have already spawned except in the case of deactivating skins.
+
+If you want to store your configuration as a profile for quickly loading later, hit the "Store as Profile" button. Profiles can be loaded using the same dropdowns
+as the default skin and default moon configs.
+
+### Other Options in Lethal Config
+
+- Allow Sync - When this setting is toggled on, clients can opt in to syncing with your profile when you're the host of a game
+
+- Attempt Sync - When this setting is toggled on, if you're playing a game as a client, you will attempt to sync your profile with the host
+
+- Indoor/Outdoor - Toggles the indoor and outdoor tabs in the skin configuration menu
+
+- Log Level - The verbosity of the skin registry's logger - for troubleshooting purposes
+
 ## For Developers
 
 ### Getting this mod as a dependency
@@ -105,6 +124,41 @@ Once you have implemented both of these classes, call the following from the Awa
 EnemySkinRegistry.RegisterSkin(new MySkin());
 ```
 Note that this does nothing for creating and reading from asset bundles. Resolution of dependencies on textures, models, animations, sounds, and other assets that a Skin or Skinner might have is the responsibility of the developer.
+
+Optionally you may include a default configuration for your skin:
+
+```csharp
+MySkin mySkin = new MySkin();
+EnemySkinRegistry.RegisterSkin
+(
+	mySkin,
+	new DefaultSkinConfigData
+	(
+		//List of moon-id to frequency pairs
+		// 0.0 means it never appears, 1.0 means it appears 			//as frequently as possible when considering other 			//skins 
+		new DefaultSkinConfigEntry[]
+		{
+			new DefaultSkinConfigEntry
+			(
+				EnemySkinRegistry.OFFENSE_ID,
+				1.0f
+			),
+			new DefaultSkinConfigEntry
+			(
+				EnemySkinRegistry.MARCH_ID,
+				0.5f
+			),
+		},
+		//Default frequency
+		//The frequency of this skin on any unconfigured map
+		0.0f,
+		//Vanilla fallback frequency
+		//Optional - frequency of the vanilla appearance if 			//this default config ends up making a new config 			//entry for the enemy on a moon
+		0.0f
+	)
+);
+```
+
 
 ### Event Handlers
 
@@ -176,6 +230,45 @@ This way, modders can have their skins do something in response to your enemy do
 
 To add your modded moon to be configurable in the menu, just call
 ```csharp
-EnemySkinRegistry.RegisterMoon(string planetName, string configLabel);
+EnemySkinRegistry.RegisterMoon(string planetName, string configLabel, DefaultMapConfigEntry[] defaultConfig = null);
 ```
-Where "planetName" must match the field of the same name in your moon's SelectableLevel object. The field "configLabel" is how your moon will appear in the GUI. For the vanilla moons, I omitted the number, but you're free to do whatever pleases you. 
+Where "planetName" must match the field of the same name in your moon's SelectableLevel object. The field "configLabel" is how your moon will appear in the GUI. For the vanilla moons, I omitted the number, but you're free to do whatever pleases you.
+"defaultConfig" is an optional field which lets a moon author supply a default skin configuration for their moon, allowing for modded moons to match skins to their theme by default.
+
+```csharp
+EnemySkinRegistry.RegisterMoon
+(
+	"13 Buck",
+	"Buck",
+	new DefaultMapConfigEntry[] 
+	{
+		new DefaultMapConfigEntry
+		(
+			//id of the enemy
+			EnemySkinRegistry.THUMPER_ID,
+			//vanilla frequency 
+			0.0f,
+			//skins
+			new SkinConfigEntry[] 
+			{
+				new SkinConfigEntry(1.0f, "antlershed.ReindeerThumper"),
+				new SkinConfigEntry(0.2f, "antlershed.RedNoseReindeerThumper"),
+			}
+		),
+		new DefaultMapConfigEntry
+		(
+			EnemySkinRegistry.EYELESS_DOG_ID, 
+			0.5f, 
+			new SkinConfigEntry[]
+			{
+				new SkinConfigEntry(1.0f, "antlershed.BlindElk"),
+			}
+		)
+	}
+);
+```
+
+So on my deer-themed moon "13 Buck," the vanilla thumper would not appear. Instead, the regular reindeer thumper would spawn most of the time (10/11), and the red-nosed reindeer thumper would spawn pretty infrequently (1/11). The elk dog would spawn 2/3 of the time and the vanilla blind dog would spawn 1/3 of the time.
+
+##To-Dos
+- Add more documentation
