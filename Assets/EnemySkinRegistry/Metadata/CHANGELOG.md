@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.4.6
+- Added a GetSkin API call.
+
+## 1.4.5
+- Added back in patchers that got removed getting this project back on github. Should fix some audio issues.
+
+## 1.4.4
+- Made some API methods static so modders could actually get at it. Whoops.
+
 ## 1.4.3
 - Added Maneater key and events (kinda. he didn't need any)
 - Added a few API calls to make it easier for modders to interact with skins

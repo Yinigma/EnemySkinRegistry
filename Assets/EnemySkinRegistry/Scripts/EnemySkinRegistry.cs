@@ -20,7 +20,7 @@ namespace AntlerShed.SkinRegistry
     {
         public const string modGUID = "antlershed.lethalcompany.enemyskinregistry";
         public const string modName = "EnemySkinRegistry";
-        public const string modVersion = "1.4.2";
+        public const string modVersion = "1.4.6";
 
         public const string GHOST_GIRL_ID = "LethalCompany.GhostGirl";
         public const string THUMPER_ID = "LethalCompany.Thumper";
@@ -114,6 +114,11 @@ namespace AntlerShed.SkinRegistry
             harmony.PatchAll(typeof(SnareFleaPatch));
             harmony.PatchAll(typeof(SporeLizardPatch));
             harmony.PatchAll(typeof(ThumperPatch));
+
+            harmony.PatchAll(typeof(CircuitBeesPatch));
+            harmony.PatchAll(typeof(RoamingLocustPatch));
+            harmony.PatchAll(typeof(TulipSnakePatch));
+
             harmony.PatchAll(typeof(EnemyPatch));
             harmony.PatchAll(typeof(InitializationPatch));
             //v50
@@ -488,9 +493,19 @@ namespace AntlerShed.SkinRegistry
         /// </summary>
         /// <param name="enemy">Usually the game object that the EnemyAI component is on, but it could be different for custom enemies</param>
         /// <returns>the id of the skin being applied to the enemy, null if no skin is applied</returns>
-        public string GetSkinId(GameObject enemy)
+        public static string GetSkinId(GameObject enemy)
         {
             return sessionState.GetSkinId(enemy);
+        }
+
+        /// <summary>
+        /// Gets the skin for the given id if it exists
+        /// </summary>
+        /// <param name="skinId">the unique id of the skin</param>
+        /// <returns>the skin data corresponding to the given id, or null if it doesn't exist</returns>
+        public Skin GetSkinData(string skinId)
+        {
+            return skins.GetSkin(skinId);
         }
 
         /// <summary>
@@ -498,9 +513,19 @@ namespace AntlerShed.SkinRegistry
         /// </summary>
         /// <param name="enemy">Usually the game object that the EnemyAI component is on, but it could be different for custom enemies</param>
         /// <returns>the skin registry's id for this enemy type</returns>
-        public string GetEnemyType(GameObject enemy)
+        public static string GetEnemyType(GameObject enemy)
         {
             return sessionState.GetEnemyType(enemy);
+        }
+
+        /// <summary>
+        /// Gets skinner instance applied to this game object if it exists
+        /// </summary>
+        /// <param name="enemy">Usually the game object that the EnemyAI component is on, but it could be different for custom enemies</param>
+        /// <returns>the skinner instance attached to this enemy</returns>
+        public static Skinner GetSkinnerInstance(GameObject enemy)
+        {
+            return sessionState.GetSkinner(enemy);
         }
 
         /// <summary>

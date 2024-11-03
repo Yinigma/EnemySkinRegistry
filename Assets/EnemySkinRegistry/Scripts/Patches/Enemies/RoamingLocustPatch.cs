@@ -10,10 +10,10 @@ namespace AntlerShed.SkinRegistry
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(DocileLocustBeesAI), nameof(DocileLocustBeesAI.Update))]
-        static void PrefixUpdate(DocileLocustBeesAI __instance, int ___previousBehavior, float ___timeSinceReturning)
+        static void PrefixUpdate(DocileLocustBeesAI __instance, float ___timeSinceReturning)
         {
-
-            if (___previousBehavior != __instance.currentBehaviourStateIndex)
+            
+            if (__instance.previousBehaviourStateIndex != __instance.currentBehaviourStateIndex)
             {
                 switch (__instance.currentBehaviourStateIndex)
                 {
