@@ -88,10 +88,11 @@ MonoBehaviour:
   Author: Yinigma
   Name: EnemySkinRegistry
   Description: Compatibility mod for custom enemy skins.
-  Version: 1.5.0
+  Version: 1.5.1
   Dependencies:
   - {fileID: 11400000, guid: fe2b9b3edf1c4c70c2f5fa687fbcd027, type: 2}
   - {fileID: 11400000, guid: 67eda684270a18ce25c4ac4f5e5d8fe3, type: 2}
+  - {fileID: 11400000, guid: a55e0b48fa04696ffa71dca09eeb6744, type: 2}
 --- !u!114 &114431642618062350
 MonoBehaviour:
   m_ObjectHideFlags: 1

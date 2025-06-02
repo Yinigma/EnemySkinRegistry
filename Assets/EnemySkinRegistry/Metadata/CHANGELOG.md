@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.5.1
+- I forgor to add the new dependency, it's added now.
+
 ## 1.5.0
 - New maintainer, hi im xu
 - Added new dependency to fix loading issues.
