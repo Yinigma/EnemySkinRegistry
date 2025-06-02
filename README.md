@@ -3,6 +3,7 @@
 
 This mod gives developers a means to register client-side enemy skins to be mutually exclusive with other registered enemy skins. It gives users the ability to control when and where those skins will appear, as well as how frequently.
 
+Also hi I'm Xu, the new maintainer, for any issues please come to the thread and ping @xuxiaolan
 
 ## Features
 

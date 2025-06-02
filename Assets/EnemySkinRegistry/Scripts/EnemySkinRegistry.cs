@@ -50,6 +50,8 @@ namespace AntlerShed.SkinRegistry
         public const string KIDNAPPER_FOX_ID = "LethalCompany.KidnapperFox";
         //v60
         public const string MANEATER_ID = "LethalCompany.Maneater";
+        //v70
+        public const string GIANTKIWI_ID = "LethalCompany.GiantKiwi";
 
         public const string EXPERIMENTATION_ID = "41 Experimentation";
         public const string ASSURANCE_ID = "220 Assurance";
@@ -129,6 +131,8 @@ namespace AntlerShed.SkinRegistry
             harmony.PatchAll(typeof(KidnapperFoxPatch));
             //v60
             harmony.PatchAll(typeof(ManeaterPatch));
+            //v70
+            harmony.PatchAll(typeof(GiantKiwiPatch));
 
             if (LogLevelSetting >= LogLevel.INFO) SkinLogger.LogMessage("Finished Patching Skin Events");
 
@@ -161,6 +165,8 @@ namespace AntlerShed.SkinRegistry
             RegisterEnemy(BARBER_ID, "Barber", SpawnLocation.INDOOR);
             //v60
             RegisterEnemy(MANEATER_ID, "Maneater", SpawnLocation.INDOOR);
+            //v70
+            RegisterEnemy(GIANTKIWI_ID, "Giant Kiwi", SpawnLocation.OUTDOOR);
             if (LogLevelSetting >= LogLevel.INFO) SkinLogger.LogMessage("Registered Vanilla Enemies");
 
             //Register Vanilla Moons
@@ -672,6 +678,9 @@ namespace AntlerShed.SkinRegistry
                 //v60
                 case CaveDwellerAI maneater:
                     return MANEATER_ID;
+                //v70
+                case GiantKiwiAI kiwi:
+                    return GIANTKIWI_ID;
                 default:
                     return null;
             }

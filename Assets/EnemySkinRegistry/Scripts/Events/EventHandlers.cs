@@ -495,6 +495,25 @@ namespace AntlerShed.SkinRegistry.Events
     }
 
     public interface ManeaterEventHandler : EnemyEventHandler
-    { 
+    {
+    }
+
+    public interface GiantKiwiEventHandler : EnemyEventHandler
+    {
+        public void OnStartChasing(GiantKiwiAI instance) { }
+
+        public void OnStopChasing(GiantKiwiAI instance) { }
+
+        public void OnKillPlayer(GiantKiwiAI instance, PlayerControllerB player) { }
+
+        public void OnSleep(GiantKiwiAI instance) { }
+
+        public void OnKillEnemy(GiantKiwiAI instance) { }
+
+        public void OnGrabEgg(GiantKiwiAI instance) { }
+
+        public void OnDropEgg(GiantKiwiAI instance) { }
+        
+        public void OnForceOpenShipDoor(GiantKiwiAI instance) { }
     }
 }

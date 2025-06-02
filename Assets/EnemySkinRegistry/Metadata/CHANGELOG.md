@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.5.0
+- New maintainer, hi im xu
+- Added new dependency to fix loading issues.
+- Added some patches and code for the new v70 enemy.
+- Recompiled for v70.
+
 ## 1.4.6
 - Added a GetSkin API call.
 

@@ -1,6 +1,9 @@
 using GameNetcodeStuff;
 using HarmonyLib;
+using LethalLevelLoader;
+using SoftMasking;
 using Unity.Netcode;
+using UnityEngine;
 
 namespace AntlerShed.SkinRegistry
 {
@@ -18,7 +21,7 @@ namespace AntlerShed.SkinRegistry
         [HarmonyPatch(typeof(GameNetworkManager), "StartDisconnect")]
         static void PrefixDisconnect()
         {
-            if(NetworkManager.Singleton!=null)
+            if (NetworkManager.Singleton != null)
             {
                 if (NetworkManager.Singleton.IsHost)
                 {
@@ -31,29 +34,12 @@ namespace AntlerShed.SkinRegistry
             }
         }
 
-        /*[HarmonyPostfix]
-        [HarmonyPatch(typeof(MenuManager), nameof(MenuManager.StartHosting))]
-        static void PostfixStartHosting()
-        {
-            EnemySkinRegistry.StartConfigServer();
-        }
-
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.OnClientConnect))]
-        static void PostfixClientConnect()
-        {
-            if (!NetworkManager.Singleton.IsServer)
-            {
-                EnemySkinRegistry.StartConfigClient();
-            }
-        }
-        
-         */
-
         [HarmonyPostfix]
         [HarmonyPatch(typeof(PlayerControllerB), "ConnectClientToPlayerObject")]
         public static void InitializeLocalPlayer(PlayerControllerB __instance)
         {
+            if (EnemySkinRegistry.LogLevelSetting >= LogLevel.INFO) EnemySkinRegistry.SkinLogger.LogInfo("Initializing Enemy Skin Registry for local player");
+
             if (__instance.IsHost)
             {
                 EnemySkinRegistry.StartConfigServer();
@@ -63,8 +49,6 @@ namespace AntlerShed.SkinRegistry
                 EnemySkinRegistry.StartConfigClient();
             }
         }
-
-        
     }
 }
 

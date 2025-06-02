@@ -12,6 +12,7 @@
         "BepInEx.dll",
         "Assembly-CSharp.dll",
         "Unity.Netcode.Runtime.dll",
+        "com.olegknyazev.softmask.dll",
         "0Harmony.dll",
         "Newtonsoft.Json.dll",
         "LethalConfig.dll",
